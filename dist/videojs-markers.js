@@ -1,8 +1,8 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['video.js'], factory);
+    define(["video.js"], factory);
   } else if (typeof exports !== "undefined") {
-    factory(require('video.js'));
+    factory(require("video.js"));
   } else {
     var mod = {
       exports: {}
@@ -11,9 +11,9 @@
     global.videojsMarkers = mod.exports;
   }
 })(this, function (_video) {
-  /*! videojs-markers - v1.0.1 - 2018-10-31
-  * Copyright (c) 2018 ; Licensed  */
-  'use strict';
+  /*! videojs-markers - v1.0.1 - 2020-10-05
+  * Copyright (c) 2020 ; Licensed  */
+  "use strict";
 
   var _video2 = _interopRequireDefault(_video);
 
@@ -32,9 +32,9 @@
   // default setting
   var defaultSetting = {
     markerStyle: {
-      'width': '7px',
-      'border-radius': '30%',
-      'background-color': 'red'
+      width: "7px",
+      "border-radius": "30%",
+      "background-color": "red"
     },
     markerTip: {
       display: true,
@@ -42,6 +42,12 @@
         return "Break: " + marker.text;
       },
       time: function time(marker) {
+        return marker.time;
+      },
+      endTime: function endTime(marker) {
+        if (marker.end) {
+          return marker.end;
+        }
         return marker.time;
       }
     },
@@ -52,11 +58,11 @@
         return "Break overlay: " + marker.overlayText;
       },
       style: {
-        'width': '100%',
-        'height': '20%',
-        'background-color': 'rgba(0,0,0,0.7)',
-        'color': 'white',
-        'font-size': '17px'
+        width: "100%",
+        height: "20%",
+        "background-color": "rgba(0,0,0,0.7)",
+        color: "white",
+        "font-size": "17px"
       }
     },
     onMarkerClick: function onMarkerClick(marker) {},
@@ -67,13 +73,13 @@
   // create a non-colliding random number
   function generateUUID() {
     var d = new Date().getTime();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
       var r = (d + Math.random() * 16) % 16 | 0;
       d = Math.floor(d / 16);
-      return (c == 'x' ? r : r & 0x3 | 0x8).toString(16);
+      return (c == "x" ? r : r & 0x3 | 0x8).toString(16);
     });
     return uuid;
-  };
+  }
 
   /**
    * Returns the size of an element and its position
@@ -109,11 +115,10 @@
     // videojs 4 doens't support it by defualt.
     if (!_video2.default.mergeOptions) {
       var isPlain = function isPlain(value) {
-        return !!value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && toString.call(value) === '[object Object]' && value.constructor === Object;
+        return !!value && (typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" && toString.call(value) === "[object Object]" && value.constructor === Object;
       };
 
       var mergeOptions = function mergeOptions(source1, source2) {
-
         var result = {};
         var sources = [source1, source2];
         sources.forEach(function (source) {
@@ -174,7 +179,7 @@
       newMarkers.forEach(function (marker) {
         marker.key = generateUUID();
 
-        player.el().querySelector('.vjs-progress-holder').appendChild(createMarkerDiv(marker));
+        player.el().querySelector(".vjs-progress-holder").appendChild(createMarkerDiv(marker));
 
         // store marker in an internal hash map
         markersMap[marker.key] = marker;
@@ -189,7 +194,7 @@
     }
 
     function setMarkderDivStyle(marker, markerDiv) {
-      markerDiv.className = 'vjs-marker ' + (marker.class || "");
+      markerDiv.className = "vjs-marker " + (marker.class || "");
 
       Object.keys(setting.markerStyle).forEach(function (key) {
         markerDiv.style[key] = setting.markerStyle[key];
@@ -198,31 +203,30 @@
       // hide out-of-bound markers
       var ratio = marker.time / player.duration();
       if (ratio < 0 || ratio > 1) {
-        markerDiv.style.display = 'none';
+        markerDiv.style.display = "none";
       }
 
       // set position
-      markerDiv.style.left = getPosition(marker) + '%';
+      markerDiv.style.left = getPosition(marker) + "%";
       if (marker.duration) {
-        markerDiv.style.width = marker.duration / player.duration() * 100 + '%';
-        markerDiv.style.marginLeft = '0px';
+        markerDiv.style.width = marker.duration / player.duration() * 100 + "%";
+        markerDiv.style.marginLeft = "0px";
       } else {
         var markerDivBounding = getElementBounding(markerDiv);
-        markerDiv.style.marginLeft = markerDivBounding.width / 2 + 'px';
+        markerDiv.style.marginLeft = markerDivBounding.width / 2 + "px";
       }
     }
 
     function createMarkerDiv(marker) {
-
-      var markerDiv = _video2.default.dom.createEl('div', {}, {
-        'data-marker-key': marker.key,
-        'data-marker-time': setting.markerTip.time(marker)
+      var markerDiv = _video2.default.dom.createEl("div", {}, {
+        "data-marker-key": marker.key,
+        "data-marker-time": setting.markerTip.time(marker)
       });
 
       setMarkderDivStyle(marker, markerDiv);
 
       // bind click event to seek to marker time
-      markerDiv.addEventListener('click', function (e) {
+      markerDiv.addEventListener("click", function (e) {
         var preventDefault = false;
         if (typeof setting.onMarkerClick === "function") {
           // if return false, prevent default behavior
@@ -230,8 +234,8 @@
         }
 
         if (!preventDefault) {
-          var key = this.getAttribute('data-marker-key');
-          player.currentTime(setting.markerTip.time(markersMap[key]));
+          var key = this.getAttribute("data-marker-key");
+          player.currentTime(setting.markerTip.endTime(markersMap[key]));
         }
       });
 
@@ -248,9 +252,9 @@
         var markerDiv = player.el().querySelector(".vjs-marker[data-marker-key='" + marker.key + "']");
         var markerTime = setting.markerTip.time(marker);
 
-        if (force || markerDiv.getAttribute('data-marker-time') !== markerTime) {
+        if (force || markerDiv.getAttribute("data-marker-time") !== markerTime) {
           setMarkderDivStyle(marker, markerDiv);
-          markerDiv.setAttribute('data-marker-time', markerTime);
+          markerDiv.setAttribute("data-marker-time", markerTime);
         }
       });
       sortMarkersList();
@@ -290,24 +294,24 @@
 
     // attach hover event handler
     function registerMarkerTipHandler(markerDiv) {
-      markerDiv.addEventListener('mouseover', function () {
-        var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
+      markerDiv.addEventListener("mouseover", function () {
+        var marker = markersMap[markerDiv.getAttribute("data-marker-key")];
         if (!!markerTip) {
           if (setting.markerTip.html) {
-            markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.html(marker);
+            markerTip.querySelector(".vjs-tip-inner").innerHTML = setting.markerTip.html(marker);
           } else {
-            markerTip.querySelector('.vjs-tip-inner').innerText = setting.markerTip.text(marker);
+            markerTip.querySelector(".vjs-tip-inner").innerText = setting.markerTip.text(marker);
           }
           // margin-left needs to minus the padding length to align correctly with the marker
-          markerTip.style.left = getPosition(marker) + '%';
+          markerTip.style.left = getPosition(marker) + "%";
           var markerTipBounding = getElementBounding(markerTip);
           var markerDivBounding = getElementBounding(markerDiv);
-          markerTip.style.marginLeft = -parseFloat(markerTipBounding.width / 2) + parseFloat(markerDivBounding.width / 4) + 'px';
-          markerTip.style.visibility = 'visible';
+          markerTip.style.marginLeft = -parseFloat(markerTipBounding.width / 2) + parseFloat(markerDivBounding.width / 4) + "px";
+          markerTip.style.visibility = "visible";
         }
       });
 
-      markerDiv.addEventListener('mouseout', function () {
+      markerDiv.addEventListener("mouseout", function () {
         if (!!markerTip) {
           markerTip.style.visibility = "hidden";
         }
@@ -315,11 +319,11 @@
     }
 
     function initializeMarkerTip() {
-      markerTip = _video2.default.dom.createEl('div', {
-        className: 'vjs-tip',
+      markerTip = _video2.default.dom.createEl("div", {
+        className: "vjs-tip",
         innerHTML: "<div class='vjs-tip-arrow'></div><div class='vjs-tip-inner'></div>"
       });
-      player.el().querySelector('.vjs-progress-holder').appendChild(markerTip);
+      player.el().querySelector(".vjs-progress-holder").appendChild(markerTip);
     }
 
     // show or hide break overlays
@@ -336,7 +340,7 @@
         if (overlayIndex !== currentMarkerIndex) {
           overlayIndex = currentMarkerIndex;
           if (breakOverlay) {
-            breakOverlay.querySelector('.vjs-break-overlay-text').innerHTML = setting.breakOverlay.text(marker);
+            breakOverlay.querySelector(".vjs-break-overlay-text").innerHTML = setting.breakOverlay.text(marker);
           }
         }
 
@@ -353,8 +357,8 @@
 
     // problem when the next marker is within the overlay display time from the previous marker
     function initializeOverlay() {
-      breakOverlay = _video2.default.dom.createEl('div', {
-        className: 'vjs-break-overlay',
+      breakOverlay = _video2.default.dom.createEl("div", {
+        className: "vjs-break-overlay",
         innerHTML: "<div class='vjs-break-overlay-text'></div>"
       });
       Object.keys(setting.breakOverlay.style).forEach(function (key) {
@@ -395,6 +399,13 @@
       if (currentMarkerIndex !== NULL_INDEX) {
         // check if staying at same marker
         var nextMarkerTime = getNextMarkerTime(currentMarkerIndex);
+        var endTime = setting.markerTip.endTime(markersList[currentMarkerIndex]);
+        if (currentTime >= setting.markerTip.time(markersList[currentMarkerIndex]) && currentTime < endTime) {
+          if (currentMarkerIndex !== NULL_INDEX && options.onMarkerReached) {
+            options.onMarkerReached(markersList[currentMarkerIndex], currentMarkerIndex);
+          }
+        }
+
         if (currentTime >= setting.markerTip.time(markersList[currentMarkerIndex]) && currentTime < nextMarkerTime) {
           return;
         }
@@ -411,8 +422,7 @@
       } else {
         // look for new index
         for (var i = 0; i < markersList.length; i++) {
-          nextMarkerTime = getNextMarkerTime(i);
-          if (currentTime >= setting.markerTip.time(markersList[i]) && currentTime < nextMarkerTime) {
+          if (currentTime >= setting.markerTip.time(markersList[i]) && currentTime < setting.markerTip.endTime(markersList[i])) {
             newMarkerIndex = i;
             break;
           }
@@ -420,13 +430,13 @@
       }
 
       // set new marker index
-      if (newMarkerIndex !== currentMarkerIndex) {
-        // trigger event if index is not null
-        if (newMarkerIndex !== NULL_INDEX && options.onMarkerReached) {
-          options.onMarkerReached(markersList[newMarkerIndex], newMarkerIndex);
-        }
-        currentMarkerIndex = newMarkerIndex;
+      // if (newMarkerIndex !== currentMarkerIndex) {
+      // trigger event if index is not null
+      if (newMarkerIndex !== NULL_INDEX && options.onMarkerReached) {
+        options.onMarkerReached(markersList[newMarkerIndex], newMarkerIndex);
       }
+      currentMarkerIndex = newMarkerIndex;
+      // }
     }
 
     // setup the whole thing
@@ -516,6 +526,6 @@
     };
   }
 
-  _video2.default.registerPlugin('markers', registerVideoJsMarkersPlugin);
+  _video2.default.registerPlugin("markers", registerVideoJsMarkersPlugin);
 });
 //# sourceMappingURL=videojs-markers.js.map
